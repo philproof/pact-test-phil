@@ -1,8 +1,8 @@
 import { pactWith } from 'jest-pact';
 import { Pact } from '@pact-foundation/pact';
-import { Test } from '@nestjs/testing';
-import { TesterService } from '../testing/tester.service';
-import { TesterModule } from '../testing/tester.module';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AppService } from '../app.service';
+import { AppModule } from '../app.module';
 
 pactWith(
   {
@@ -10,13 +10,14 @@ pactWith(
     provider: 'test provider',
   },
   (provider: Pact) => {
-    let testerService: TesterService;
+    let appService: AppService;
 
     beforeAll(async () => {
-      const moduleRef = await Test.createTestingModule({
-        imports: [TesterModule],
+      const app: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
       }).compile();
-      testerService = moduleRef.get(TesterService);
+      appService = app.get(AppService);
+      process.env.API_HOST = provider.mockService.baseUrl;
     });
 
     const bodyExpectation = { hi: 'howdy there partner!' };
@@ -28,7 +29,7 @@ pactWith(
           uponReceiving: 'a request to get the test string',
           withRequest: {
             method: 'GET',
-            path: `${provider.mockService.baseUrl}/test`,
+            path: `/hello`,
           },
           willRespondWith: {
             status: 200,
@@ -36,12 +37,9 @@ pactWith(
           },
         });
       });
-      it('should return the test string', (done) => {
-        testerService.getTestStr().subscribe((res) => {
-          console.log('*** res: ', res);
-          expect(res).toHaveProperty('hi');
-          done();
-        });
+      it('should return "Hello World!"', async () => {
+        const res = await appService.getHello();
+        expect(res).toEqual(bodyExpectation);
       });
     });
   },
