@@ -1,9 +1,20 @@
-// import { Injectable } from '@nestjs/common';
-// import { Observable, of } from 'rxjs';
+import { HttpService, Injectable } from '@nestjs/common';
+export interface HelloResponse {
+  hi: string;
+}
+@Injectable()
+export class AppService {
+  private static getApiEndpoint() {
+    return process.env.API_HOST || 'http://localhost:8081';
+  }
 
-// @Injectable()
-// export class AppService {
-//   getHello(): Observable<string> {
-//     return of('Hello World!');
-//   }
-// }
+  public constructor(private readonly http: HttpService) {}
+
+  async getHello(): Promise<HelloResponse> {
+    const { data } = await this.http
+      .get(`${AppService.getApiEndpoint()}/hello`)
+      .toPromise();
+
+    return data;
+  }
+}

@@ -1,13 +1,16 @@
-// import { Controller, Get } from '@nestjs/common';
-// import { Observable } from 'rxjs';
-// import { AppService } from './app.service';
+import { BadRequestException, Controller, Get } from '@nestjs/common';
+import { AppService, HelloResponse } from './app.service';
 
-// @Controller()
-// export class AppController {
-//   constructor(private readonly appService: AppService) {}
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
 
-//   @Get()
-//   getHello(): Observable<string> {
-//     return this.appService.getHello();
-//   }
-// }
+  @Get()
+  async getHello(): Promise<HelloResponse> {
+    try {
+      return await this.appService.getHello();
+    } catch (e) {
+      throw new BadRequestException();
+    }
+  }
+}

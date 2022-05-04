@@ -1,0 +1,31 @@
+{
+  "consumer": {
+    "name": "test consumer pact"
+  },
+  "provider": {
+    "name": "test provider"
+  },
+  "interactions": [
+    {
+      "description": "a request to get the test string",
+      "providerState": "has not returned string",
+      "request": {
+        "method": "GET",
+        "path": "/hello"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "hi": "howdy there partner!"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}
